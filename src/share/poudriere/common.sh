@@ -1,10 +1,10 @@
 #!/bin/sh
-# 
+#
 # Copyright (c) 2010-2013 Baptiste Daroussin <bapt@FreeBSD.org>
 # Copyright (c) 2010-2011 Julien Laffaye <jlaffaye@FreeBSD.org>
 # Copyright (c) 2012-2017 Bryan Drewery <bdrewery@FreeBSD.org>
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
 # are met:
@@ -13,7 +13,7 @@
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -400,7 +400,7 @@ logfile() {
 	_logfile logfile "${pkgname}"
 	echo "${logfile}"
 }
- 
+
 _log_path_top() {
 	local -; set -u +x
 
@@ -2129,7 +2129,7 @@ enter_interactive() {
 		if [ -n "${flavor-}" ]; then
 			cat >> "${MASTERMNT}/etc/motd" <<-EOF
 			FLAVOR:			${flavor}
-			
+
 			A FLAVOR was used to build but is not in the environment.
 			Remember to pass FLAVOR to make:
 				make FLAVOR=${flavor}
@@ -5531,7 +5531,7 @@ deps_fetch_vars() {
 	fi
 	if [ "${CHECK_CHANGED_DEPS}" != "no" ]; then
 		if have_ports_feature SUBPACKAGES; then
-			_changed_deps="LIB_DEPENDS_ALL _lib_depends RUN_DEPENDS_ALL _run_depends"
+			_changed_deps="LIB_DEPENDS_ALL_SUBPACKAGES _lib_depends RUN_DEPENDS_ALL_SUBPACKAGES _run_depends"
 		else
 			_changed_deps="LIB_DEPENDS _lib_depends RUN_DEPENDS _run_depends"
 		fi
@@ -5539,12 +5539,13 @@ deps_fetch_vars() {
 	if have_ports_feature FLAVORS; then
 		_lookup_flavors="FLAVOR _flavor FLAVORS _flavors"
 	fi
+	_pdeps_var='${PKG_DEPENDS} ${EXTRACT_DEPENDS} ${PATCH_DEPENDS} ${FETCH_DEPENDS} ${BUILD_DEPENDS}'
 	if have_ports_feature SUBPACKAGES; then
 		_pkgname_var="PKGNAME${_origin_subpkg:+.${_origin_subpkg}}"
-		_pdeps_var='${PKG_DEPENDS_ALL} ${EXTRACT_DEPENDS_ALL} ${PATCH_DEPENDS_ALL} ${FETCH_DEPENDS_ALL} ${BUILD_DEPENDS_ALL} ${LIB_DEPENDS_ALL} ${RUN_DEPENDS_ALL}'
+		_pdeps_var='${_pdeps_var} ${LIB_DEPENDS_ALL_SUBPACKAGES} ${RUN_DEPENDS_ALL_SUBPACKAGES}'
 	else
 		_pkgname_var="PKGNAME"
-		_pdeps_var='${PKG_DEPENDS} ${EXTRACT_DEPENDS} ${PATCH_DEPENDS} ${FETCH_DEPENDS} ${BUILD_DEPENDS} ${LIB_DEPENDS} ${RUN_DEPENDS}'
+		_pdeps_var='${_pdeps_var} ${LIB_DEPENDS} ${RUN_DEPENDS}'
 	fi
 	if ! port_var_fetch_originspec "${originspec}" \
 		${_pkgname_var} _pkgname \
@@ -5902,7 +5903,7 @@ delete_old_pkg() {
 	# do not have and delete them.
 	if [ "${CHECK_CHANGED_DEPS}" != "no" ]; then
 		current_deps=""
-		# FIXME: Move into Infrastructure/scripts and 
+		# FIXME: Move into Infrastructure/scripts and
 		# 'make actual-run-depends-list' after enough testing,
 		# which will avoida all of the injail hacks
 
@@ -8384,7 +8385,7 @@ calculate_ospart_size() {
 	else
 		SWAP_SIZE=0
 	fi
-	
+
 	OS_SIZE=$(( ( FULL_SIZE - CFG_SIZE - DATA_SIZE - SWAP_SIZE ) / NUM_PART ))
 	msg "OS Partiton size: ${OS_SIZE}m"
 }
